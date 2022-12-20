@@ -14,6 +14,8 @@ const AddProjectZone = () => {
             onClick={toggleNewProject}
             className={`dark:border-dark-border transition-all
             text-[#718096]
+            hover:scale-100
+            hover:shadow-2xl
             min-h-[150px]
             w-full
             border-dashed
@@ -24,6 +26,8 @@ const AddProjectZone = () => {
             justify-center
             items-center
             cursor-pointer
+            transition
+   
         `}>
            <span className={`
                         w-8 h-8 mb-[16px] rounded-md 

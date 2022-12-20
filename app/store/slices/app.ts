@@ -2,7 +2,10 @@ import {createSlice} from "@reduxjs/toolkit";
 import {IApp} from "../../models/slices/app";
 
 const initialState: IApp = {
-    theme: ''
+    theme: '',
+    isOpenModal: false,
+    modalContent: '',
+    modalFooter: ''
 }
 
 const appSlice = createSlice({
@@ -11,7 +14,18 @@ const appSlice = createSlice({
     reducers: {
         changeTheme: (state, action) => {
             state.theme = action.payload;
-        }
+        },
+        toggleModalShow: (state, action) => {
+            console.log(action.payload);
+            state.isOpenModal = !state.isOpenModal;
+            state.modalContent = action.payload.modalContent;
+            state.modalFooter = action.payload.modalFooter;
+        },
+        toggleModalClose: (state) => {
+            state.isOpenModal = false;
+            state.modalContent = '';
+            state.modalFooter = '';
+        },
     }
 });
 

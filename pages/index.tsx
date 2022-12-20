@@ -1,14 +1,21 @@
 import initializeAuthentication from "../app/config/firebase.init";
-import Banner from "../app/components/common/Banner";
-import BannerProgress from "../app/components/common/BannerProgress";
-import {useEffect} from "react";
-import {useDispatch} from "react-redux";
-import {AppSliceActions} from "../app/store/slices/app";
-import {useAppDispatch} from "../app/store";
+import Banner from "../app/components/utils/Banner";
+import BannerProgress from "../app/components/utils/BannerProgress";
+import {GetServerSideProps, NextPage} from "next";
+import {useAppDispatch, useAppSelector, wrapper} from "../app/store";
+import {useRouter} from "next/router";
 
 initializeAuthentication();  /*initialize auth*/
 
-export default function Home() {
+const Home: NextPage = () => {
+    const dispatch = useAppDispatch();
+    const router = useRouter()
+    const {isAuth} = useAppSelector(state => state.authSlice);
+
+    if (isAuth) {
+        router.push('/projects');
+    }
+
     return (
         <div className='animate-[contentLoad_1s_ease-in-out]'>
             <Banner/>
@@ -16,4 +23,12 @@ export default function Home() {
         </div>
     )
 }
+export default Home;
+
+export const getServerSideProps: GetServerSideProps =
+    wrapper.getServerSideProps(store => async (context,) => {
+        return {
+            props: {}
+        }
+    });
 

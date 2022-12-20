@@ -1,3 +1,6 @@
 export interface IApp {
-    theme : string
+    theme : string,
+    isOpenModal : boolean,
+    modalContent : any,
+    modalFooter : any
 }

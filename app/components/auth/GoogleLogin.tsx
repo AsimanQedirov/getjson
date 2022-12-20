@@ -14,7 +14,6 @@ const GoogleLogin = () => {
                 console.log('res => ', res)
             })
     }
-    console.log(googleSvg)
     return (
         <button
             className={`
@@ -32,7 +31,6 @@ const GoogleLogin = () => {
                 className="inline-block mr-[16px]"
                 src={googleSvg}
                 alt="Picture of the author"
-                layout={"fixed"}
             />
             Sign in with Google</button>
     );

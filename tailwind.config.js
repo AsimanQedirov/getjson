@@ -25,8 +25,8 @@ module.exports = {
                     '100%': {transform: 'translateY(0px)', opacity: 1},
                 },
                 'fadeIn': {
-                    '0%': {opacity: 0},
-                    '100%': {opacity: 1}
+                    '0%': {scale: 0 , opacity : 0},
+                    '100%': {scale: 1,opacity : 1}
                 }
             }
         },

@@ -121,8 +121,14 @@ function Header() {
                 </div>
 
                 {/*user profile*/}
-                <div className='ml-[20px] h-9 w-9 rounded-full border'>
+                <div data-tooltip-target="tooltip-light" data-tooltip-style="light"
+                     className='ml-[20px] h-9 w-9 rounded-full border cursor-pointer'>
                     <Image src={userSvg} alt={'user'}/>
+                </div>
+                <div id="tooltip-light" role="tooltip"
+                     className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip">
+                    Tooltip content
+                    <div className="tooltip-arrow" data-popper-arrow></div>
                 </div>
             </div>
         </header>
