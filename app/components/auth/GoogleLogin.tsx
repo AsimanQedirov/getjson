@@ -1,6 +1,5 @@
 import React from 'react';
 import {getAuth, GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
-import googleSvg from 'assets/icons/google.svg';
 import Image from "next/image";
 
 const provider = new GoogleAuthProvider();
@@ -29,7 +28,7 @@ const GoogleLogin = () => {
             onClick={handeGoogleSignIn}>
             <Image
                 className="inline-block mr-[16px]"
-                src={googleSvg}
+                src={'/assets/icons/google.svg'} width={21} height={22}
                 alt="Picture of the author"
             />
             Sign in with Google</button>

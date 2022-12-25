@@ -6,4 +6,5 @@ export interface IProjectBody {
 export interface IProjectResponse extends IProjectBody {
     slug: string;
     unique_id: string;
+    api_count : number
 }

@@ -1,16 +1,16 @@
 import React, {useCallback, useState} from 'react';
-import logo from 'assets/images/logo.svg'
+import logo from '../../../public/assets/images/logo.svg'
 import Image from "next/image";
 import Link from "next/link";
-import en from 'assets/icons/en-language.svg';
-import rus from 'assets/icons/ru-language.svg';
-import az from 'assets/icons/az-language.svg';
-import dropdownSvg from 'assets/icons/dropdown.svg';
-import userSvg from 'assets/images/user.svg';
-import moon from 'assets/icons/moon.svg';
-import moonDark from 'assets/icons/moon-white.svg';
-import sun from 'assets/icons/sun.svg';
-import sunDark from 'assets/icons/sun-white.svg';
+import en from '../../../public/assets/icons/en-language.svg';
+import rus from '../../../public/assets/icons/ru-language.svg';
+import az from '../../../public/assets/icons/az-language.svg';
+import dropdownSvg from '../../../public/assets/icons/dropdown.svg';
+import userSvg from '../../../public/assets/images/user.svg';
+import moon from '../../../public/assets/icons/moon.svg';
+import moonDark from '../../../public/assets/icons/moon-white.svg';
+import sun from '../../../public/assets/icons/sun.svg';
+import sunDark from '../../../public/assets/icons/sun-white.svg';
 import {useRouter} from "next/router";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {AppSliceActions} from "../../store/slices/app";

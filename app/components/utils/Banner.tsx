@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import Image from "next/image";
-import banner from 'assets/images/banner.svg'
 import GoogleLogin from "../auth/GoogleLogin";
 import GithubLogin from "../auth/GithubLogin";
 import {useLoginGuestMutation} from "../../store/auth/auth.api";
@@ -60,7 +59,7 @@ const Banner = () => {
 
             </div>
             <div className="banner_image">
-                <Image src={banner} alt={'banner image'}/>
+                <Image src={'/assets/images/banner.svg'} width={557} height={600} alt={'banner image'}/>
             </div>
         </div>
     );

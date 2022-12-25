@@ -1,22 +1,21 @@
 import React, {useState} from 'react';
-import editIcon from 'assets/icons/project-edit.svg';
-import deleteIcon from 'assets/icons/project-delete.svg';
-import editLightIcon from 'assets/icons/project-edit-white.svg';
-import deleteLightIcon from 'assets/icons/project-delete-white.svg';
 import Image from "next/image";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {IProjectResponse} from "../../models/project";
-import {useDeleteProjectMutation, useUpdateProjectMutation} from "../../store/project/project.api";
+import {useDeleteProjectMutation, useGetProjectsQuery, useUpdateProjectMutation} from "../../store/project/project.api";
 import {AppSliceActions} from "../../store/slices/app";
 import ProjectCardSkeleton from "./ProjectCardSkeleton";
+import GlobalModal from "../reusable/Modal";
 
 
-const ProjectCard = ({name, slug, unique_id}: IProjectResponse) => {
+const ProjectCard = ({name, slug, unique_id, api_count}: IProjectResponse) => {
     const dispatch = useAppDispatch();
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
     const [projectName, setProjectName] = useState<string>(name ?? '')
     const [updateProject, {isLoading: isUpdating}] = useUpdateProjectMutation();
-    const [deleteProject, {isLoading : isDeleting}] = useDeleteProjectMutation();
+    const [deleteProject, {isLoading: isDeleting}] = useDeleteProjectMutation();
+    const {data, isLoading, isFetching, status} = useGetProjectsQuery(1);
+
     const {theme} = useAppSelector(state => state.appSlice);
     const updateExistProject = () => {
         if (projectName) {
@@ -24,14 +23,9 @@ const ProjectCard = ({name, slug, unique_id}: IProjectResponse) => {
         }
         setIsUpdate(false);
     }
-    const deleteExistProject = () => dispatch(AppSliceActions.toggleModalShow({
-        modalContent: <p className={'text-[15px]'}>Are you sure delete for this?</p>,
-        modalFooter: <button onClick={() => {
-            deleteProject(unique_id);
-            dispatch(AppSliceActions.toggleModalClose());
-        }}
-                             className='bg-red-500 text-white px-2 rounded'>Delete</button>
-    }));
+    const deleteThisProject = () => {
+        deleteProject(unique_id);
+    }
     if (isUpdating) {
         return <ProjectCardSkeleton/>
     }
@@ -52,15 +46,25 @@ const ProjectCard = ({name, slug, unique_id}: IProjectResponse) => {
             text-[14px]
         `}>
             <div className="card-header flex justify-end items-center gap-2 p-2">
-                <a onClick={() => setIsUpdate(true)}><Image width={14} height={14}
-                                                            src={theme === 'light' ? editIcon : editLightIcon}
-                                                            alt="edit icon"/></a>
-                <a onClick={() => deleteExistProject()}><Image width={14} height={14}
-                                                               src={theme === 'light' ? deleteIcon : deleteLightIcon}
-                                                               alt="edit icon"/></a>
+                <a onClick={() => setIsUpdate(true)}>
+                    <Image width={14} height={14}
+                           src={`/assets/icons/project-edit${theme === 'light' ? '' : '-white'}.svg`}
+                           alt="edit icon"/></a>
+                <GlobalModal
+                    title={'Warning'}
+                    content={<div className={'text-center'}>
+                       Are you sure delete this?
+                    </div>}
+                    confirm={deleteThisProject}>
+                    <a>
+                        <Image width={14} height={14}
+                               src={`/assets/icons/project-delete${theme === 'light' ? '' : '-white'}.svg`}
+                               alt="edit icon"/>
+                    </a>
+                </GlobalModal>
             </div>
             <div className="card-body text-center dark:text-white">
-                {isUpdate ? <form onSubmit={(event)=>{
+                {isUpdate ? <form onSubmit={(event) => {
                     event.preventDefault();
                     updateExistProject();
                 }}>
@@ -76,7 +80,7 @@ const ProjectCard = ({name, slug, unique_id}: IProjectResponse) => {
                 </form> : projectName}
             </div>
             <div className="card-footer p-2 border-t dark:border-t-dark-border dark:text-dark-text">
-                API- <code>{}</code>
+                API- <code>{api_count}</code>
             </div>
         </div>
     );

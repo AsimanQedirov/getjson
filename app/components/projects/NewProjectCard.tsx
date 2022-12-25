@@ -3,27 +3,36 @@ import Image from "next/image";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {ProjectSliceActions} from "../../store/slices/projects";
 import {useCreateProjectMutation} from "../../store/project/project.api";
-import editIcon from "../../assets/icons/project-edit.svg";
-import editLightIcon from "../../assets/icons/project-edit-white.svg";
-import deleteIcon from "../../assets/icons/project-delete.svg";
-import deleteLightIcon from "../../assets/icons/project-delete-white.svg";
+import editIcon from "../../../public/assets/icons/project-edit.svg";
+import editLightIcon from "../../../public/assets/icons/project-edit-white.svg";
+import deleteIcon from "../../../public/assets/icons/project-delete.svg";
+import deleteLightIcon from "../../../public/assets/icons/project-delete-white.svg";
 import ProjectCardSkeleton from "./ProjectCardSkeleton";
 
 const NewProjectCard = () => {
-    const [createProject, createProjectResult] = useCreateProjectMutation();
+    const [createProject, {isLoading , isSuccess}] = useCreateProjectMutation();
     const {theme} = useAppSelector(state => state.appSlice);
 
     const dispatch = useAppDispatch();
     const createNewProject = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value) {
             createProject({name: e.target.value});
-            dispatch(ProjectSliceActions.toggleNewProject(false));
-        } else dispatch(ProjectSliceActions.toggleNewProject(false));
+        } else closeToggleNewProject()
     }
-    console.log(createProjectResult);
-    if(createProjectResult.isLoading){
+    const closeToggleNewProject = () =>{
+        dispatch(ProjectSliceActions.toggleNewProject(false));
+    }
+
+    useEffect(()=>{
+       if(isSuccess){
+           closeToggleNewProject();
+       }
+    },[isSuccess]);
+
+    if (isLoading) {
         return <ProjectCardSkeleton/>
     }
+
 
     return (
         <div

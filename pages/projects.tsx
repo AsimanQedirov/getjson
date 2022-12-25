@@ -5,16 +5,15 @@ import NewProjectCard from "../app/components/projects/NewProjectCard";
 import {useAppSelector} from "../app/store";
 import {useGetProjectsQuery} from "../app/store/project/project.api";
 import {IProjectResponse} from "../app/models/project";
-import ProjectCardSkeleton from "../app/components/projects/ProjectCardSkeleton";
 
 function Projects() {
-    const {data, isLoading, status} = useGetProjectsQuery(1);
+    const {data, isLoading, isFetching, status} = useGetProjectsQuery(1);
     const {isNewProject} = useAppSelector(state => state.projectSlice);
     /*search project name */
     const searchProject = (event: FormEvent) => {
         event.preventDefault();
     }
-    console.log('isLoading', status)
+    console.log('isLoading', isFetching)
     return (
         <div className='projects'>
             <div className='flex items-center justify-between'>
@@ -34,12 +33,8 @@ function Projects() {
                 <AddProjectZone/>
                 {isNewProject && <NewProjectCard/>}
                 {data && (data.data.map((item: IProjectResponse, index: number) =>
-                    <ProjectCard name={item.name} slug={item.slug} unique_id={item.unique_id} key={index}/>))}
-                {isLoading && <>
-                    <ProjectCardSkeleton/>
-                    <ProjectCardSkeleton/>
-                    <ProjectCardSkeleton/>
-                </>}
+                    <ProjectCard api_count={item.api_count} name={item.name} slug={item.slug} unique_id={item.unique_id}
+                                 key={index}/>))}
             </div>
         </div>
     );
