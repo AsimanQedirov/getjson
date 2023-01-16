@@ -3,7 +3,7 @@ import React from 'react';
 const Footer = () => {
 
     return (
-        <footer className='absolute left-0 right-0 bottom-0'>
+        <footer className='footer absolute left-0 right-0 bottom-0'>
             <p>
                 2022 All Rights Reserved.
             </p>

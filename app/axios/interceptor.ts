@@ -1,5 +1,6 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import {deleteCookie, getCookie} from "cookies-next";
+import {axiosBaseQuery} from "../query/config.api";
 
 axios.interceptors.request.use((config: AxiosRequestConfig) => {
     config.headers = config.headers ?? {};
@@ -22,8 +23,12 @@ axios.interceptors.response.use((response: AxiosResponse) => {
     const status = error.response.status;
     if (status === 401) {
         deleteCookie('access_token');
-        window.location.href = '/'
-        console.log(error.response.data.message);
+        window.location.href = '/';
+        // axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`)
+        //     .then(res=>{
+        //         console.log(res);
+        //         // debugger;
+        //     })
     }
     return Promise.reject(error)
 })

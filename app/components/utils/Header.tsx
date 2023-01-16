@@ -1,11 +1,10 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import logo from '../../../public/assets/images/logo.svg'
 import Image from "next/image";
 import Link from "next/link";
 import en from '../../../public/assets/icons/en-language.svg';
 import rus from '../../../public/assets/icons/ru-language.svg';
 import az from '../../../public/assets/icons/az-language.svg';
-import dropdownSvg from '../../../public/assets/icons/dropdown.svg';
 import userSvg from '../../../public/assets/images/user.svg';
 import moon from '../../../public/assets/icons/moon.svg';
 import moonDark from '../../../public/assets/icons/moon-white.svg';
@@ -14,14 +13,15 @@ import sunDark from '../../../public/assets/icons/sun-white.svg';
 import {useRouter} from "next/router";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {AppSliceActions} from "../../store/slices/app";
+import {Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/menu";
+import {deleteCookie} from "cookies-next";
+import {AuthSliceActions} from "../../store/slices/auth";
 
 function Header() {
     const {theme} = useAppSelector(state => state.appSlice);
+    const {isAuth} = useAppSelector(state => state.authSlice);
     const dispatch = useAppDispatch();
-    const [dropdown, setDropdown] = useState<boolean>(false);
-    const {pathname} = useRouter();
-
-    const toggleDropdown = () => setDropdown(!dropdown);
+    const {pathname , push} = useRouter();
 
     const changeTheme = useCallback(() => {
         if (localStorage.getItem("theme") === "dark") {
@@ -35,6 +35,11 @@ function Header() {
 
         }
     }, []);
+    const logout = () => {
+        deleteCookie('access_token');
+        push('/');
+        dispatch(AuthSliceActions.loggedOut());
+    }
     return (
         <header className="flex justify-between py-[24px]">
             <div className="header-menu flex"> {/* logo and navbar elements*/}
@@ -82,54 +87,40 @@ function Header() {
                 </div>
                 {/*header dropdown menu*/}
                 <div className={'header-dropdown relative'}>
-                    <button
-                        onClick={toggleDropdown}
-                        className={'flex items-center'}
-                        id="languageDropdown"
-                        data-dropdown-toggle="dropdown"
-                        type="button">
-                        <Image src={en} className='w-9' alt={'en'}/>
-                        <Image className={'ml-1 '} src={dropdownSvg} alt={'dropdown'} width={15}/>
-                    </button>
-                    <div id="dropdown"
-                         className={` py-2 transition duration-150 ease-in-out ${dropdown ? 'absolute' : 'hidden'}
-                         z-10'
-                        right-0
-                        bg-main-bg
-                        dark:bg-[#323352]
-                        dark:border-main-border
-                        border
-                        min-w-max rounded divide-y divide-gray-100 shadow-2xl`}>
-                        <ul aria-labelledby="languageDropdown" className="dark:text-white">
-                            <li className={'px-4 cursor-pointer border-b dark:border-b-main-border'}>
-                                <div className='flex items-center'>
+
+                    <div>
+                        <Menu>
+                            <MenuButton>
+                                <Image src={en} className='w-9' alt={'en'}/>
+                            </MenuButton>
+                            <MenuList
+                                className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg dark:text-white p-1 shadow-lg rounded-md'}>
+                                <MenuItem>
                                     <Image className="w-9 mr-2" src={az} alt={'aze'}/> Azerbaijan
-                                </div>
-                            </li>
-                            <li className={'px-4 cursor-pointer border-b dark:border-b-main-border'}>
-                                <div className='flex items-center'>
+                                </MenuItem>
+                                <MenuItem>
                                     <Image className="w-9 mr-2" src={en} alt={'en'}/> English
-                                </div>
-                            </li>
-                            <li className={'px-4 cursor-pointer'}>
-                                <div className='flex items-center'>
+                                </MenuItem>
+                                <MenuItem>
                                     <Image className="w-9 mr-2" src={rus} alt={'ru'}/> Russian
-                                </div>
-                            </li>
-                        </ul>
+                                </MenuItem>
+                            </MenuList>
+                        </Menu>
                     </div>
                 </div>
-
-                {/*user profile*/}
-                <div data-tooltip-target="tooltip-light" data-tooltip-style="light"
-                     className='ml-[20px] h-9 w-9 rounded-full border cursor-pointer'>
-                    <Image src={userSvg} alt={'user'}/>
-                </div>
-                <div id="tooltip-light" role="tooltip"
-                     className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip">
-                    Tooltip content
-                    <div className="tooltip-arrow" data-popper-arrow></div>
-                </div>
+                <Menu>
+                    <MenuButton className="ml-[20px]">
+                        <div className='h-7 w-7 rounded-full !m-0 !p-0 border cursor-pointer'>
+                            <Image src={userSvg} alt={'user'}/>
+                        </div>
+                    </MenuButton>
+                    { <MenuList
+                        className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg dark:text-white p-1 shadow-lg rounded-md'}>
+                        <MenuItem onClick={logout}>
+                            Logout
+                        </MenuItem>
+                    </MenuList>}
+                </Menu>
             </div>
         </header>
     );

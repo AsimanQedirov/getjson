@@ -1,22 +1,34 @@
 import React, {useState} from 'react';
 import Image from "next/image";
-import {useAppDispatch, useAppSelector} from "../../store";
+import {useAppSelector} from "../../store";
 import {IProjectResponse} from "../../models/project";
-import {useDeleteProjectMutation, useGetProjectsQuery, useUpdateProjectMutation} from "../../store/project/project.api";
-import {AppSliceActions} from "../../store/slices/app";
+import {useDeleteProjectMutation, useUpdateProjectMutation} from "../../store/project/project.api";
 import ProjectCardSkeleton from "./ProjectCardSkeleton";
-import GlobalModal from "../reusable/Modal";
-
+import {useRouter} from "next/router";
+import {
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogOverlay,
+    Button,
+    useDisclosure
+} from "@chakra-ui/react";
 
 const ProjectCard = ({name, slug, unique_id, api_count}: IProjectResponse) => {
-    const dispatch = useAppDispatch();
+    const router = useRouter();
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const cancelRef = React.useRef<any>()
     const [projectName, setProjectName] = useState<string>(name ?? '')
     const [updateProject, {isLoading: isUpdating}] = useUpdateProjectMutation();
     const [deleteProject, {isLoading: isDeleting}] = useDeleteProjectMutation();
-    const {data, isLoading, isFetching, status} = useGetProjectsQuery(1);
-
     const {theme} = useAppSelector(state => state.appSlice);
+    const toProject = () => {
+        router.push(`projects/${unique_id}`);
+    }
+    console.log(unique_id)
     const updateExistProject = () => {
         if (projectName) {
             updateProject({name: projectName, id: unique_id});
@@ -30,7 +42,8 @@ const ProjectCard = ({name, slug, unique_id, api_count}: IProjectResponse) => {
         return <ProjectCardSkeleton/>
     }
     return (
-        <div className={`dark:bg-transparent
+        <div
+            className={`dark:bg-transparent
             dark:border-dark-border
             text-[#718096]
             min-h-[150px]
@@ -50,20 +63,15 @@ const ProjectCard = ({name, slug, unique_id, api_count}: IProjectResponse) => {
                     <Image width={14} height={14}
                            src={`/assets/icons/project-edit${theme === 'light' ? '' : '-white'}.svg`}
                            alt="edit icon"/></a>
-                <GlobalModal
-                    title={'Warning'}
-                    content={<div className={'text-center'}>
-                       Are you sure delete this?
-                    </div>}
-                    confirm={deleteThisProject}>
-                    <a>
-                        <Image width={14} height={14}
-                               src={`/assets/icons/project-delete${theme === 'light' ? '' : '-white'}.svg`}
-                               alt="edit icon"/>
-                    </a>
-                </GlobalModal>
+                <a onClick={onOpen}>
+                    <Image width={14} height={14}
+                           src={`/assets/icons/project-delete${theme === 'light' ? '' : '-white'}.svg`}
+                           alt="edit icon"/>
+                </a>
+
+
             </div>
-            <div className="card-body text-center dark:text-white">
+            <div className="card-body text-center dark:text-white" onClick={toProject}>
                 {isUpdate ? <form onSubmit={(event) => {
                     event.preventDefault();
                     updateExistProject();
@@ -82,6 +90,32 @@ const ProjectCard = ({name, slug, unique_id, api_count}: IProjectResponse) => {
             <div className="card-footer p-2 border-t dark:border-t-dark-border dark:text-dark-text">
                 API- <code>{api_count}</code>
             </div>
+            <AlertDialog
+                isOpen={isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                            Delete Project
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>
+                            Are you sure delete this?
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter>
+                            <Button ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button colorScheme='red' onClick={deleteThisProject} ml={3}>
+                                Delete
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
         </div>
     );
 };

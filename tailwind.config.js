@@ -10,7 +10,8 @@ module.exports = {
                 'input-bg': '#FFFFFF5B',
                 'input-border': '#0000000A',
                 'dark-border': '#707B8B',
-                'dark-text': '#CBD5E0'
+                'dark-text': '#CBD5E0',
+                'dark-dropdown-bg' : '#323352'
             },
             boxShadow: {
                 '3xl': '10px 10px 70px rgba(32, 32, 32, 0.1)',

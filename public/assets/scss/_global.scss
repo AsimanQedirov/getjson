@@ -2,3 +2,12 @@ body {
   font-family: 'Montserrat Regular';
   overflow-x: hidden;
 }
+.gradient{
+  @apply text-white py-2
+  px-4 rounded-3xl
+  bg-gradient-to-b
+  from-[#323352FF]
+  to-[#7C7B90FF]
+  dark:from-[#565571]
+  dark:to-[#565571]
+}

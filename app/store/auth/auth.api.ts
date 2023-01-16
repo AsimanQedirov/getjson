@@ -14,7 +14,13 @@ export const authApi = createApi({
                 method: 'post'
             }),
             transformResponse: (response: IResponse<IAuth>, meta, arg) => response.data,
+        }),
+        me: builder.query({
+            query: (): { url: string, method: string } => ({
+                url: '/auth/me',
+                method: 'get'
+            })
         })
     })
 });
-export const {useLoginGuestMutation} = authApi
+export const {useLoginGuestMutation , useMeQuery} = authApi

@@ -41,4 +41,23 @@
     color: #CBD5E0;
     font-weight: 600;
   }
+.banner-progress-icons{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .banner-progress-icon{
+    height: 70px;
+    width: 70px;
+    background: linear-gradient(70.91deg, #764BA2 0%, #667EEA 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .p{
+    font-size: 20px;
+  }
+}
+
 }
