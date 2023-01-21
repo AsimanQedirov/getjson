@@ -87,21 +87,20 @@ function Header() {
                 </div>
                 {/*header dropdown menu*/}
                 <div className={'header-dropdown relative'}>
-
                     <div>
                         <Menu>
                             <MenuButton>
                                 <Image src={en} className='w-9' alt={'en'}/>
                             </MenuButton>
                             <MenuList
-                                className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg dark:text-white p-1 shadow-lg rounded-md'}>
-                                <MenuItem>
+                                className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>
+                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
                                     <Image className="w-9 mr-2" src={az} alt={'aze'}/> Azerbaijan
                                 </MenuItem>
-                                <MenuItem>
+                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
                                     <Image className="w-9 mr-2" src={en} alt={'en'}/> English
                                 </MenuItem>
-                                <MenuItem>
+                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
                                     <Image className="w-9 mr-2" src={rus} alt={'ru'}/> Russian
                                 </MenuItem>
                             </MenuList>
@@ -115,8 +114,8 @@ function Header() {
                         </div>
                     </MenuButton>
                     { <MenuList
-                        className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg dark:text-white p-1 shadow-lg rounded-md'}>
-                        <MenuItem onClick={logout}>
+                        className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>
+                        <MenuItem onClick={logout} className={'dark:bg-dark-dropdown-bg dark:text-white'}>
                             Logout
                         </MenuItem>
                     </MenuList>}

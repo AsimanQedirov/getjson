@@ -24,11 +24,11 @@ axios.interceptors.response.use((response: AxiosResponse) => {
     if (status === 401) {
         deleteCookie('access_token');
         window.location.href = '/';
-        // axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`)
-        //     .then(res=>{
-        //         console.log(res);
-        //         // debugger;
-        //     })
+        axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`)
+            .then(res=>{
+                console.log(res);
+                // debugger;
+            })
     }
     return Promise.reject(error)
 })

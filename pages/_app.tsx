@@ -7,22 +7,12 @@ import Footer from "../app/components/utils/Footer";
 import {useEffect} from "react";
 import {AppSliceActions} from "../app/store/slices/app";
 import '../app/axios/interceptor';
-import {ChakraProvider, extendTheme} from "@chakra-ui/react";
-import {useRouter} from "next/router";
-import {usePathname} from "next/navigation";
+import {ChakraProvider} from "@chakra-ui/react";
+import localfont from "@next/font/local";
 
-
-const theme = extendTheme({
-    fonts : {
-        heading: `Montserrat Regular`,
-        // body: `'Raleway', sans-serif`,
-        src : `url('/assets/fonts/Montserrat-Regular.ttf')`
-    }
-})
+const montserrat = localfont({src : '../public/assets/fonts/Montserrat-Regular.ttf'})
 const App = ({Component, pageProps: {...pageProps}}: AppProps) => {
     const dispatch = useAppDispatch();
-    const router = useRouter();
-    const path = usePathname();
     const isAuth = useAppSelector(state => state.authSlice.isAuth);
     useEffect(() => {
         if (localStorage.theme === "dark") {
@@ -33,22 +23,30 @@ const App = ({Component, pageProps: {...pageProps}}: AppProps) => {
             dispatch(AppSliceActions.changeTheme('light'));
         }
     }, []);
-    console.log(isAuth)
+
+    // useEffect(() => {
+    //     if (isAuth) {
+    //         router.push('/projects');
+    //     }
+    // }, [isAuth])
     // if (!isAuth && path !== '/') {
     //     router.push('/');
     //     return;
     // }
-    return <div className='bg-main-bg bg-gradient-to-b dark:from-[#323352FF] dark:to-[#51506DFF] relative'>
-        <ChakraProvider theme={theme}>
-            <div className="container min-h-screen mx-auto relative">
-                <Header/>
-                <div className='pb-48'>
-                    <Component {...pageProps} />
+
+    return <main className={montserrat.className}>
+        <div className='bg-main-bg bg-gradient-to-b dark:from-[#323352FF] dark:to-[#51506DFF] relative'>
+            <ChakraProvider>
+                <div className="container min-h-screen mx-auto relative">
+                    <Header/>
+                    <div className='pb-48'>
+                        <Component {...pageProps} />
+                    </div>
+                    <Footer/>
                 </div>
-                <Footer/>
-            </div>
-        </ChakraProvider>
-    </div>
+            </ChakraProvider>
+        </div>
+    </main>
 
 
 }

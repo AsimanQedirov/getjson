@@ -17,16 +17,18 @@ import {
     useDisclosure
 } from "@chakra-ui/react";
 import {useForm} from 'react-hook-form'
-import {useCreateApiMutation, useGetColumnsQuery} from "../../store/api/json.api";
+import {useCreateApiMutation, useFillDataMutation, useGetColumnsQuery} from "../../store/api/json.api";
 import {IFieldColumns} from "../../models/json";
 import {useMeQuery} from "../../store/auth/auth.api";
 
-const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
+const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
     /*rtk query*/
     const columns = useGetColumnsQuery(1);
-    const [createApi, {isLoading, isError, isSuccess}] = useCreateApiMutation()
+    const me = useMeQuery(1);
+    const [fillData] = useFillDataMutation()
+    const [createApi, {isLoading, isError, isSuccess, data}] = useCreateApiMutation();
     const {isOpen, onClose, onOpen} = useDisclosure();
-    const {handleSubmit, register, formState: {errors, isValid}} = useForm();
+    const {handleSubmit, register, formState: {errors}, reset} = useForm();
     const [fieldColumns, setFieldColumns] = useState<Array<IFieldColumns>>([
         {
             fieldName: 'fieldName_',
@@ -35,7 +37,6 @@ const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
         }
     ]);
     const onSubmit = (data: any) => {
-
         const body: any = {
             columns: []
         }
@@ -73,6 +74,10 @@ const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
                     fieldCheckbox: 'fieldCheckbox_'
                 }
             ]);
+            reset({})
+            if (me.isSuccess) {
+                fillData({userId: me.data.data.id, slug: data.data.title})
+            }
             onClose(); //close modal after the request is success
         }
     }, [isSuccess])
@@ -84,14 +89,15 @@ const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
                     bg='blackAlpha.200'
                     backdropFilter='blur(3px) hue-rotate(0deg)'
                 />
-                <ModalContent>
-                    <ModalHeader>Create new APi</ModalHeader>
+                <ModalContent className={'dark:bg-main-border dark:text-white'}>
+                    <ModalHeader>Create new API</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <FormControl isInvalid={!!(errors.name)}>
                                 <FormLabel htmlFor='name'>Email address</FormLabel>
-                                <FormHelperText>Enter meaningful resource name, it will be used to generate
+                                <FormHelperText className={'dark:text-white'}>
+                                    Enter meaningful resource name, it will be used to generate
                                     API endpoints.</FormHelperText>
                                 <Input type='text' className={'mt-1'} {...register(
                                     'name',
@@ -159,11 +165,14 @@ const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
                                  border rounded-3xl px-6 mt-3 text-[20px] text-white' type={'button'}
                                     onClick={appendNewField}>+
                             </button>
-                            <div className={'flex w-full gap-3 mt-6'}>
+                            <div className={'flex w-full gap-3 mt-6 mb-3'}>
                                 <button className='w-full border rounded-3xl p-3' type={'button'}
                                         onClick={onClose}>Cancel
                                 </button>
-                                <button className='w-full border rounded-3xl p-3' type={'submit'}>Create and Generate
+                                <button
+                                    className={`w-full border rounded-3xl p-3 ${isLoading ? 'opacity-30' :
+                                        isError ? 'border-red-700' : ''}`}
+                                    type={'submit'}>Create and Generate
                                 </button>
                             </div>
                         </form>
@@ -172,5 +181,5 @@ const CreateProjectForm = React.memo(({project_id}: { project_id: string }) => {
             </Modal>
         </>
     );
-})
-export default CreateProjectForm;
+});
+export default CreateApiForm;

@@ -1,6 +1,6 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../../query/config.api";
-import {IAuth} from "../../models/auth/auth";
+import {IAuth, IRegister, IUser} from "../../models/auth/auth";
 import {IResponse} from "../../models";
 
 
@@ -20,7 +20,17 @@ export const authApi = createApi({
                 url: '/auth/me',
                 method: 'get'
             })
+        }),
+        register: builder.mutation<{
+            authorization: { token: string },
+            user: IUser
+        }, unknown>({
+            query: (data: IRegister): { url: string, method: string, data: IRegister } => ({
+                url: '/auth/register',
+                method: 'post',
+                data
+            }),
         })
     })
 });
-export const {useLoginGuestMutation , useMeQuery} = authApi
+export const {useLoginGuestMutation, useRegisterMutation, useMeQuery} = authApi

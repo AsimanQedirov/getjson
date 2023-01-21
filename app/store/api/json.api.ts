@@ -17,11 +17,31 @@ export const jsonApi = createApi({
         getApi: build.query({
             query: (project_id: string): { url: string, method: string } => {
                 return {
-                    url: `/projects/${project_id}`,
+                    url: `/projects/${project_id}?paginate`,
                     method: 'get',
                 }
             },
             providesTags: ['JSON']
+        }),
+        deleteApi: build.mutation({
+            query: ({id,}: { id: number })
+                : { url: string, method: string } => {
+                return {
+                    url: `/userData/${id}`,
+                    method: 'delete',
+                }
+            },
+            invalidatesTags: ['JSON']
+        }),
+        showApi: build.query({
+            query: ({
+                        id
+                    }: { id: string }): { url: string, method: string } => {
+                return {
+                    url: `/userData/${id}`,
+                    method: 'get',
+                }
+            }
         }),
         createApi: build.mutation({
             query: (data: ICreateApiBody): { url: string, method: string, data: ICreateApiBody } => {
@@ -32,8 +52,31 @@ export const jsonApi = createApi({
                 }
             },
             invalidatesTags: ['JSON']
-        })
+        }),
+        fillData: build.mutation({
+            query: ({
+                        userId,
+                        slug,
+                        count
+                    }: { userId: string, slug: string, count?: number }): { url: string, method: string, data: { count: number } } => {
+                return {
+                    url: `/${userId}/data/${slug}/fill`,
+                    method: 'post',
+                    data: {
+                        count: count ?? 20
+                    }
+                }
+            },
+            invalidatesTags: ['JSON']
+        }),
     })
 })
 
-export const {useGetColumnsQuery, useCreateApiMutation, useGetApiQuery} = jsonApi
+export const {
+    useGetColumnsQuery,
+    useCreateApiMutation,
+    useGetApiQuery,
+    useFillDataMutation,
+    useDeleteApiMutation,
+    useShowApiQuery
+} = jsonApi

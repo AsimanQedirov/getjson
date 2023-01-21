@@ -7,6 +7,7 @@ import {useRouter} from "next/router";
 import {setCookie} from "cookies-next";
 import {useAppDispatch} from "../../store";
 import {AuthSliceActions} from "../../store/slices/auth";
+import {Auth} from "../../helper/auth";
 
 const Banner = () => {
     const dispatch = useAppDispatch();
@@ -15,10 +16,14 @@ const Banner = () => {
 
     useEffect(() => {
         if (loginResult.isSuccess) {
-            const {access_token} = loginResult.data;
-            setCookie('access_token', access_token);
-            dispatch(AuthSliceActions.loggedIn());
-            router.push('/projects');
+            const {access_token, user} = loginResult.data;
+            Auth.login({
+                access_token,
+                userData: user
+            }, dispatch, router);
+            // setCookie('access_token', access_token);
+            // dispatch(AuthSliceActions.loggedIn());
+            // router.push('/projects');
         }
     }, [loginResult.isSuccess])
 

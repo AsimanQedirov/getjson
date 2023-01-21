@@ -32,7 +32,7 @@ const BannerProgress = () => {
                     <div className='banner-progress-icon'>
                         <Image width={22} height={24} src={'/assets/icons/database.svg'} alt={'Database'}/>
                     </div>
-                    <p>Create your base</p>
+                    <p>Create your api</p>
                 </div>
                 <div className={'banner-progress-icons text-white'}>
                     <div className='banner-progress-icon'>
