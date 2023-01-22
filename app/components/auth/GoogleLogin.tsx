@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
+import {GoogleAuthProvider, signInWithPopup , signOut} from "@firebase/auth";
 import Image from "next/image";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../config/firebase.init";
@@ -30,12 +30,11 @@ const GoogleLogin = () => {
         };
         register(data);
     }
-    // useEffect(() => {
-    //     console.log(user)
-    //     if (user) {
-    //         registerWithGoogle(user)
-    //     }
-    // }, [user]);
+    useEffect(() => {
+        if (user) {
+            registerWithGoogle(user);
+        }
+    }, [user]);
 
     useEffect(() => {
         if (isSuccess && data) {

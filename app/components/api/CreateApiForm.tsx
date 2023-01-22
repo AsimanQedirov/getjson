@@ -38,7 +38,12 @@ const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
     ]);
     const onSubmit = (data: any) => {
         const body: any = {
-            columns: []
+            columns: [{
+                title: {
+                    id: 1,
+                },
+                required: 0
+            }]
         }
         Object.entries(data).forEach(([key, value], index) => {
             if (data['fieldName_' + index]) {
@@ -51,7 +56,7 @@ const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
             }
         });
         body['title'] = data.name;
-        body['project_id'] = project_id
+        body['project_id'] = project_id;
         createApi(body)
     }
 
@@ -80,7 +85,8 @@ const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
             }
             onClose(); //close modal after the request is success
         }
-    }, [isSuccess])
+    }, [isSuccess]);
+    console.log(fieldColumns);
     return (
         <>
             <button onClick={onOpen} className={'gradient'}>+ Add a new api</button>

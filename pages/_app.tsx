@@ -9,11 +9,14 @@ import {AppSliceActions} from "../app/store/slices/app";
 import '../app/axios/interceptor';
 import {ChakraProvider} from "@chakra-ui/react";
 import localfont from "@next/font/local";
+import {useRouter} from "next/router";
 
-const montserrat = localfont({src : '../public/assets/fonts/Montserrat-Regular.ttf'})
+const montserrat = localfont({src: '../public/assets/fonts/Montserrat-Regular.ttf'})
 const App = ({Component, pageProps: {...pageProps}}: AppProps) => {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const isAuth = useAppSelector(state => state.authSlice.isAuth);
+
     useEffect(() => {
         if (localStorage.theme === "dark") {
             window.document.documentElement.classList.add("dark");
@@ -24,11 +27,13 @@ const App = ({Component, pageProps: {...pageProps}}: AppProps) => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     if (isAuth) {
-    //         router.push('/projects');
-    //     }
-    // }, [isAuth])
+
+    useEffect(() => {
+        if (isAuth) {
+            router.push('/projects');
+        }
+    }, [isAuth]);
+
     // if (!isAuth && path !== '/') {
     //     router.push('/');
     //     return;

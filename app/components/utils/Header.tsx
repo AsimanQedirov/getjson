@@ -16,6 +16,8 @@ import {AppSliceActions} from "../../store/slices/app";
 import {Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/menu";
 import {deleteCookie} from "cookies-next";
 import {AuthSliceActions} from "../../store/slices/auth";
+import {GoogleAuthProvider, signInWithPopup , signOut} from "@firebase/auth";
+import {auth} from "../../config/firebase.init";
 
 function Header() {
     const {theme} = useAppSelector(state => state.appSlice);
@@ -36,6 +38,7 @@ function Header() {
         }
     }, []);
     const logout = () => {
+        auth.signOut();
         deleteCookie('access_token');
         push('/');
         dispatch(AuthSliceActions.loggedOut());
