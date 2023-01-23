@@ -23,11 +23,12 @@ const GoogleLogin = () => {
                 console.log('res => ', res)
             })
     }
-    const registerWithGoogle = ({displayName, email, accessToken}: any) => {
+    const registerWithGoogle = ({displayName, email, accessToken , _tokenResponse}: any) => {
         const data = {
             name: displayName,
             email,
-            access_token: accessToken
+            access_token: accessToken,
+            oauth_token : _tokenResponse.oauthAccessToken
         };
         register(data);
     }
