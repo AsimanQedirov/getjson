@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
 import Image from "next/image";
-import {useAuthState} from "react-firebase-hooks/auth";
+import {useAuthState, useIdToken} from "react-firebase-hooks/auth";
 import {auth} from "../../config/firebase.init";
 import {useAppDispatch} from "../../store";
 import {AuthSliceActions} from "../../store/slices/auth";
@@ -16,6 +16,7 @@ const GoogleLogin = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const [user, setUser] = useAuthState(auth);
+    const [token] = useIdToken(auth);
     const [register, {data, isSuccess, isLoading, isError}] = useRegisterMutation();
     const handeGoogleSignIn = async () => {
         signInWithPopup(auth, provider)
@@ -23,17 +24,19 @@ const GoogleLogin = () => {
                 console.log('res => ', res)
             })
     }
-    const registerWithGoogle = ({displayName, email, accessToken , _tokenResponse}: any) => {
+    const registerWithGoogle = ({displayName, email, accessToken}: any) => {
         const data = {
             name: displayName,
             email,
             access_token: accessToken,
-            oauth_token : _tokenResponse.oauthAccessToken
+            // oauth_token: _tokenResponse.oauthAccessToken
         };
         register(data);
     }
     useEffect(() => {
         if (user) {
+            console.log(token);
+            // debugger;
             registerWithGoogle(user);
         }
     }, [user]);
