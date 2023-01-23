@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {GoogleAuthProvider, signInWithPopup , signOut} from "@firebase/auth";
+import {GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
 import Image from "next/image";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../config/firebase.init";
@@ -23,10 +23,11 @@ const GoogleLogin = () => {
                 console.log('res => ', res)
             })
     }
-    const registerWithGoogle = ({displayName, email}: any) => {
+    const registerWithGoogle = ({displayName, email, accessToken}: any) => {
         const data = {
             name: displayName,
-            email
+            email,
+            access_token: accessToken
         };
         register(data);
     }

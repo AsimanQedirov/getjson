@@ -14,5 +14,6 @@ export interface IAuth {
 
 export interface IRegister {
     email: string;
-    name: string
+    name: string;
+    access_token : string;
 }
