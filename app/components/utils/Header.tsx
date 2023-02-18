@@ -2,9 +2,6 @@ import React, {useCallback} from 'react';
 import logo from '../../../public/assets/images/logo.svg'
 import Image from "next/image";
 import Link from "next/link";
-import en from '../../../public/assets/icons/en-language.svg';
-import rus from '../../../public/assets/icons/ru-language.svg';
-import az from '../../../public/assets/icons/az-language.svg';
 import userSvg from '../../../public/assets/images/user.svg';
 import moon from '../../../public/assets/icons/moon.svg';
 import moonDark from '../../../public/assets/icons/moon-white.svg';
@@ -13,17 +10,28 @@ import sunDark from '../../../public/assets/icons/sun-white.svg';
 import {useRouter} from "next/router";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {AppSliceActions} from "../../store/slices/app";
-import {Menu, MenuButton, MenuItem, MenuList} from "@chakra-ui/menu";
+import {Menu, MenuButton} from "@chakra-ui/menu";
 import {deleteCookie} from "cookies-next";
 import {AuthSliceActions} from "../../store/slices/auth";
-import {GoogleAuthProvider, signInWithPopup , signOut} from "@firebase/auth";
 import {auth} from "../../config/firebase.init";
+import {
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
+    useDisclosure
+} from "@chakra-ui/react";
+import GithubLogin from "../auth/GithubLogin";
+import GoogleLogin from "../auth/GoogleLogin";
 
 function Header() {
     const {theme} = useAppSelector(state => state.appSlice);
     const {isAuth} = useAppSelector(state => state.authSlice);
+    const {isOpen, onClose, onOpen} = useDisclosure();
     const dispatch = useAppDispatch();
-    const {pathname , push} = useRouter();
+    const {pathname, push} = useRouter();
 
     const changeTheme = useCallback(() => {
         if (localStorage.getItem("theme") === "dark") {
@@ -37,6 +45,8 @@ function Header() {
 
         }
     }, []);
+    const pushRouter = (path: string) => isAuth ? push(path) : onOpen();
+
     const logout = () => {
         auth.signOut();
         deleteCookie('access_token');
@@ -52,12 +62,14 @@ function Header() {
                     </Link>
                 </div>
                 <div className="navbar text-[16px] font-[500] ml-[40px] flex gap-[16px] dark:text-white">
-                    <Link className={`nav_link ${pathname === "/projects" ? '__activeLink' : ''}`} href={'/projects'}>
+                    <a onClick={() => pushRouter('projects')}
+                       className={`nav_link ${pathname === "/projects" ? '__activeLink' : ''}`}>
                         Projects
-                    </Link>
-                    <Link className={`nav_link ${pathname === "/docs" ? '__activeLink' : ''}`} href={'/docs'}>
+                    </a>
+                    <a onClick={() => pushRouter('docs')}
+                       className={`nav_link ${pathname === "/docs" ? '__activeLink' : ''}`}>
                         Docs
-                    </Link>
+                    </a>
                 </div>
             </div>
 
@@ -89,41 +101,59 @@ function Header() {
                     <Image src={theme === 'dark' ? moonDark : moon} alt={'moon'}/>
                 </div>
                 {/*header dropdown menu*/}
-                <div className={'header-dropdown relative'}>
-                    <div>
-                        <Menu>
-                            <MenuButton>
-                                <Image src={en} className='w-9' alt={'en'}/>
-                            </MenuButton>
-                            <MenuList
-                                className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>
-                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
-                                    <Image className="w-9 mr-2" src={az} alt={'aze'}/> Azerbaijan
-                                </MenuItem>
-                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
-                                    <Image className="w-9 mr-2" src={en} alt={'en'}/> English
-                                </MenuItem>
-                                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>
-                                    <Image className="w-9 mr-2" src={rus} alt={'ru'}/> Russian
-                                </MenuItem>
-                            </MenuList>
-                        </Menu>
-                    </div>
-                </div>
+                {/*<div className={'header-dropdown relative'}>*/}
+                {/*    <div>*/}
+                {/*        <Menu>*/}
+                {/*            <MenuButton>*/}
+                {/*                <Image src={en} className='w-9' alt={'en'}/>*/}
+                {/*            </MenuButton>*/}
+                {/*            <MenuList*/}
+                {/*                className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>*/}
+                {/*                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>*/}
+                {/*                    <Image className="w-9 mr-2" src={az} alt={'aze'}/> Azerbaijan*/}
+                {/*                </MenuItem>*/}
+                {/*                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>*/}
+                {/*                    <Image className="w-9 mr-2" src={en} alt={'en'}/> English*/}
+                {/*                </MenuItem>*/}
+                {/*                <MenuItem className={'dark:bg-dark-dropdown-bg dark:text-white'}>*/}
+                {/*                    <Image className="w-9 mr-2" src={rus} alt={'ru'}/> Russian*/}
+                {/*                </MenuItem>*/}
+                {/*            </MenuList>*/}
+                {/*        </Menu>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
                 <Menu>
-                    <MenuButton className="ml-[20px]">
+                    <MenuButton className="ml-[20px]" onClick={onOpen}>
                         <div className='h-7 w-7 rounded-full !m-0 !p-0 border cursor-pointer'>
                             <Image src={userSvg} alt={'user'}/>
                         </div>
                     </MenuButton>
-                    { <MenuList
-                        className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>
-                        <MenuItem onClick={logout} className={'dark:bg-dark-dropdown-bg dark:text-white'}>
-                            Logout
-                        </MenuItem>
-                    </MenuList>}
+                    {/*{<MenuList*/}
+                    {/*    className={'bg-main-bg border dark:border-main-border dark:bg-dark-dropdown-bg  p-1 shadow-lg rounded-md'}>*/}
+                    {/*    <MenuItem onClick={logout} className={'dark:bg-dark-dropdown-bg dark:text-white'}>*/}
+                    {/*        Logout*/}
+                    {/*    </MenuItem>*/}
+                    {/*</MenuList>}*/}
                 </Menu>
             </div>
+            <Modal onClose={onClose} isCentered size={'md'} isOpen={isOpen}>
+                <ModalOverlay
+                    bg='blackAlpha.200'
+                    backdropFilter='blur(3px) hue-rotate(0deg)'
+                />
+                <ModalContent className={'dark:bg-main-border dark:text-white'}>
+                    <ModalHeader className={'text-center'}>Login</ModalHeader>
+                    <ModalCloseButton/>
+                    <ModalBody>
+                        <div className={'my-2'}>
+                            <GoogleLogin size={'full'}/>
+                        </div>
+                        <div className={'my-4'}>
+                            <GithubLogin size={'full'}/>
+                        </div>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </header>
     );
 }

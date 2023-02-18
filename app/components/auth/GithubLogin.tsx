@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const provider = new GithubAuthProvider()
 
-const GithubLogin = () => {
+const GithubLogin = ({size}: { size: string }) => {
     const handleGithubSignIn = () => {
         const auth = getAuth();
         signInWithPopup(auth, provider)
@@ -21,7 +21,8 @@ const GithubLogin = () => {
             bg-[#171515] 
             flex 
             items-center
-             w-[290px] 
+             w-${size ?? '[290px]'} 
+              justify-center
              px-[37px] 
              py-[12px] 
              text-[16px]

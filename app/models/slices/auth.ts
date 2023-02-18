@@ -1,3 +1,3 @@
 export interface IAuth {
-    isAuth: boolean
+    isAuth: boolean;
 }

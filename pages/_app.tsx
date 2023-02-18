@@ -28,11 +28,11 @@ const App = ({Component, pageProps: {...pageProps}}: AppProps) => {
     }, []);
 
 
-    useEffect(() => {
-        if (isAuth) {
-            router.push('/projects');
-        }
-    }, [isAuth]);
+    // useEffect(() => {
+    //     if (isAuth) {
+    //         router.push('/projects');
+    //     }
+    // }, [isAuth]);
 
     // if (!isAuth && path !== '/') {
     //     router.push('/');

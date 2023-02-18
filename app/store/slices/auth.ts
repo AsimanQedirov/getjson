@@ -4,6 +4,7 @@ import {getCookie} from "cookies-next";
 
 const initialState: IAuth = {
     isAuth: !!getCookie('access_token')
+
 }
 
 const authSlice = createSlice({

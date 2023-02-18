@@ -22,6 +22,7 @@ import useDebounce from "../../app/hook/useDebounce";
 import DeleteApi from "../../app/components/api/DeleteApi";
 import EditApiForm from "../../app/components/api/EditApiForm";
 import QRCodeApi from "../../app/components/api/QRCodeApi";
+import JSONApiSkeleton from "../../app/components/api/JSONApiSkeleton";
 
 const Projects = () => {
     const {theme} = useAppSelector(state => state.appSlice);
@@ -32,7 +33,7 @@ const Projects = () => {
     const {query} = useRouter();
     const [params, setParams] = useState<any>('')
 
-    const {data, isSuccess} = useGetApiQuery(params);
+    const {data, isSuccess, isLoading} = useGetApiQuery(params);
     const [fillData] = useFillDataMutation();
     const me = useMeQuery(1);
 
@@ -49,19 +50,36 @@ const Projects = () => {
     useEffect(() => {
         if (query.projects) setParams(query.projects)
     }, [query.projects]);
+
     useEffect(() => {
         if (debounceValue) {
+
             console.log('debounceValue', debounceValue);
 
         }
     }, [debounceValue])
 
+    console.log(data);
+
+    const handleFillData = (slug: string, count: number) => {
+        fillData({
+            userId: me.data.data?.id,
+            slug,
+            count
+        })
+    }
+
     return (
         <div>
             <div className='flex justify-between dark:text-white'>
                 <p className="project-name">Project Name</p>
-                {<CreateApiForm project_id={params}/>}
+                {<CreateApiForm project_id={params}>
+                    <button className={'gradient'}>+ Add a new api</button>
+                </CreateApiForm>}
             </div>
+            {
+                isLoading && <JSONApiSkeleton/>
+            }
             {isSuccess && data.data?.map((item: any, index: number) => <div key={index} className="apis mt-5">
                 <div
                     className="api-row p-4 rounded-xl bg-white
@@ -74,16 +92,20 @@ const Projects = () => {
                                     <PopoverTrigger>
                                         <button className={`gradient ml-2`}>Generate data</button>
                                     </PopoverTrigger>
-                                    <PopoverContent>
+                                    <PopoverContent className={'max-w-[200px]'}>
                                         <PopoverArrow/>
-                                        <PopoverBody>
+                                        <PopoverBody className={'max-w-[200px]'}>
                                             <Slider
+                                                size={'sm'}
                                                 id={`slider${index}`}
-                                                defaultValue={20}
+                                                defaultValue={item.data_count}
                                                 min={0}
                                                 max={200}
                                                 colorScheme='purple'
-                                                onChange={(v) => setValue(v)}
+                                                onChangeEnd={(v) => {
+                                                    handleFillData(item.slug, v);
+                                                }}
+                                                // onChange={(v) => setValue(v)}
                                                 onMouseEnter={() => setShowToolTip({[`show${index}`]: true})}
                                                 onMouseLeave={() => setShowToolTip({[`show${index}`]: false})}>
                                                 <SliderTrack>
@@ -95,7 +117,7 @@ const Projects = () => {
                                                     color='white'
                                                     placement='top'
                                                     isOpen={showToolTip[`show${index}`]}
-                                                    label={`${value ?? 20}`}
+                                                    label={`${item.data_count}`}
                                                 >
                                                     <SliderThumb/>
                                                 </Tooltip>
@@ -117,15 +139,32 @@ const Projects = () => {
                         </div>
                     </div>
                     <div className={'flex items-center gap-4'}>
-                        <QRCodeApi value={`https://api.getjson.io/api/v1/${me.data.data?.id}/data/${item.slug}`}/>
+                        {me.isSuccess &&
+                            <QRCodeApi value={`https://api.getjson.io/api/v1/${me.data.data?.id}/data/${item.slug}`}/>}
 
-                        <EditApiForm slug={item.slug} id={item.id} user_id={me.data.data?.id}/>
+                        {me.isSuccess &&
+                            <EditApiForm slug={item.slug} id={item.id} user_id={me.data.data?.id}/>}
 
                         <DeleteApi id={item.id}/>
                     </div>
                 </div>
             </div>)}
             {/*Modal*/}
+
+            <div className={'flex justify-center'}>
+                {
+                    data?.data?.length === 0 && <CreateApiForm project_id={params}>
+                        <div
+                            className={`rounded-md border-2 
+                    border-dotted w-96 h-80 mx-auto md:mt-40 flex
+                    cursor-pointer
+                     justify-center items-center`}>
+
+                            <span className={'text-[80px] opacity-30'}>+</span>
+                        </div>
+                    </CreateApiForm>
+                }
+            </div>
         </div>
     );
 };

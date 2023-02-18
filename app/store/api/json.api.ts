@@ -53,6 +53,17 @@ export const jsonApi = createApi({
             },
             invalidatesTags: ['JSON']
         }),
+        updateApi: build.mutation({
+            query: ({data, id}: { data: ICreateApiBody, id: string }):
+                { url: string, method: string, data: ICreateApiBody } => {
+                return {
+                    url: `/userData/${id}`,
+                    method: 'post',
+                    data
+                }
+            },
+            invalidatesTags: ['JSON']
+        }),
         fillData: build.mutation({
             query: ({
                         userId,
@@ -78,5 +89,6 @@ export const {
     useGetApiQuery,
     useFillDataMutation,
     useDeleteApiMutation,
-    useShowApiQuery
+    useShowApiQuery,
+    useUpdateApiMutation
 } = jsonApi

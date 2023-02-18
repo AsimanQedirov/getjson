@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
 import Image from "next/image";
-import {useAuthState, useIdToken} from "react-firebase-hooks/auth";
+import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../config/firebase.init";
 import {useAppDispatch} from "../../store";
 import {AuthSliceActions} from "../../store/slices/auth";
@@ -12,11 +12,10 @@ import {useRouter} from "next/router";
 
 const provider = new GoogleAuthProvider();
 
-const GoogleLogin = () => {
+const GoogleLogin = ({size}: { size: string }) => {
     const dispatch = useAppDispatch();
     const router = useRouter();
     const [user, setUser] = useAuthState(auth);
-    const [token] = useIdToken(auth);
     const [register, {data, isSuccess, isLoading, isError}] = useRegisterMutation();
     const handeGoogleSignIn = async () => {
         signInWithPopup(auth, provider)
@@ -35,8 +34,6 @@ const GoogleLogin = () => {
     }
     useEffect(() => {
         if (user) {
-            console.log(token);
-            // debugger;
             registerWithGoogle(user);
         }
     }, [user]);
@@ -57,11 +54,13 @@ const GoogleLogin = () => {
             bg-white 
             flex 
             items-center
-             w-[290px] 
+             w-${size ?? '[290px]'} 
              px-[48px] 
              py-[12px] 
              text-[16px]
              font-[500]
+             ${size ? 'border' : ''}
+             justify-center
              rounded-[60px]`}
             onClick={handeGoogleSignIn}>
             <Image

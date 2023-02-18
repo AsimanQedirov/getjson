@@ -21,12 +21,12 @@ import {useCreateApiMutation, useFillDataMutation, useGetColumnsQuery} from "../
 import {IFieldColumns} from "../../models/json";
 import {useMeQuery} from "../../store/auth/auth.api";
 
-const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
+const CreateApiForm = React.memo(({project_id , children}: { project_id: string , children : JSX.Element }) => {
     /*rtk query*/
     const columns = useGetColumnsQuery(1);
     const me = useMeQuery(1);
     const [fillData] = useFillDataMutation()
-    const [createApi, {isLoading, isError, isSuccess, data}] = useCreateApiMutation();
+    const [createApi, {isLoading, isError, isSuccess, data, error}] = useCreateApiMutation();
     const {isOpen, onClose, onOpen} = useDisclosure();
     const {handleSubmit, register, formState: {errors}, reset} = useForm();
     const [fieldColumns, setFieldColumns] = useState<Array<IFieldColumns>>([
@@ -86,10 +86,10 @@ const CreateApiForm = React.memo(({project_id}: { project_id: string }) => {
             onClose(); //close modal after the request is success
         }
     }, [isSuccess]);
-    console.log(fieldColumns);
+    console.log(error);
     return (
         <>
-            <button onClick={onOpen} className={'gradient'}>+ Add a new api</button>
+            <div className={'inline-block'} onClick={onOpen}>{children}</div>
             <Modal onClose={onClose} isCentered size={'2xl'} isOpen={isOpen}>
                 <ModalOverlay
                     bg='blackAlpha.200'

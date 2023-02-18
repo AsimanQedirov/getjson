@@ -18,8 +18,8 @@ import {
     Select,
     useDisclosure
 } from "@chakra-ui/react";
-import {jsonApi, useGetColumnsQuery} from "../../store/api/json.api";
-import {IFieldColumns} from "../../models/json";
+import {jsonApi, useGetColumnsQuery, useUpdateApiMutation} from "../../store/api/json.api";
+import {IApiSettings, IFieldColumns, IFieldValueColumns} from "../../models/json";
 import {useForm} from "react-hook-form";
 
 interface IProps {
@@ -31,19 +31,19 @@ interface IProps {
 const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
     const {theme} = useAppSelector(state => state.appSlice);
     const {isOpen, onClose, onOpen} = useDisclosure();
-    const {handleSubmit, register, formState: {errors}, reset} = useForm();
-    const [fieldColumns, setFieldColumns] = useState<Array<IFieldColumns>>([
-        {
-            fieldName: 'fieldName_',
-            fieldType: 'fieldType_',
-            fieldCheckbox: 'fieldCheckbox_'
-        }
-    ]);
+    const [trigger, {data: showData, isSuccess: isShowSuccess, isError, isLoading}] = jsonApi.useLazyShowApiQuery();
+    const [updateApi, {
+        isLoading: isUpdateLoading,
+        isError: isUpdateError,
+        isSuccess: isUpdateSuccess,
+        error: updateError
+    }] = useUpdateApiMutation()
+    const {handleSubmit, register, formState: {errors}, reset} = useForm({});
+    const [fieldColumns, setFieldColumns] = useState<Array<IFieldValueColumns>>([]);
     const onSubmit = (data: any) => {
         const body: any = {
             columns: []
         }
-        console.log('data', data);
         Object.entries(data).forEach(([key, value], index) => {
             if (data['fieldName_' + index]) {
                 body.columns.push({
@@ -55,20 +55,26 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
             }
         });
         body['title'] = data.name;
-        body['project_id'] = 'project_id'
+        body['project_id'] = id;
         // createApi(body)
+        updateApi({...body, id})
     }
-    const [trigger, {data: showData, isSuccess: isShowSuccess, isError, isLoading}] = jsonApi.useLazyShowApiQuery();
 
     const columns = useGetColumnsQuery(1);
 
-    const editApi = () => trigger({id});
+    const editApi = () => {
+        trigger({id});
+        onOpen();
+    };
 
     const appendNewField = () => {
         setFieldColumns([...fieldColumns, {
             fieldName: 'fieldName_',
             fieldType: 'fieldType_',
-            fieldCheckbox: 'fieldCheckbox_'
+            fieldCheckbox: 'fieldCheckbox_',
+            value: '',
+            title: '',
+            required: false,
         }])
     }
     const removeExistField = (order: number) => {
@@ -76,11 +82,21 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
     }
 
     useEffect(() => {
-        if (isShowSuccess) {
-            console.log(showData);
-
+        if (isShowSuccess && showData.data.api_settings.length > 0) {
+            setFieldColumns(showData.data.api_settings.map((item: IApiSettings) => {
+                    return {
+                        fieldName: 'fieldName_',
+                        fieldType: 'fieldType_',
+                        fieldCheckbox: 'fieldCheckbox_',
+                        value: item.column_id,
+                        title: item.title,
+                        required: !!item.required
+                    }
+                })
+            )
         }
-    }, [isShowSuccess])
+    }, [isShowSuccess]);
+    console.log(fieldColumns);
     return (
         <div>
             <a onClick={editApi}>
@@ -98,7 +114,7 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
                     <ModalHeader>Create new API</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                        {!isLoading && <form onSubmit={handleSubmit(onSubmit)}>
                             <FormControl isInvalid={!!(errors.name)}>
                                 <FormLabel htmlFor='name'>Email address</FormLabel>
                                 <FormHelperText className={'dark:text-white'}>
@@ -108,7 +124,7 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
                                     'name',
                                     {
                                         required: true,
-                                    })} placeholder={'Name...'}/>
+                                    })} defaultValue={showData?.data.title} placeholder={'Name...'}/>
                                 <FormErrorMessage>{errors.name && 'This is required'}</FormErrorMessage>
                             </FormControl>
                             <Divider className={'my-2'}/>
@@ -121,22 +137,24 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
                                         })} value={'ID'}/>
                                 </FormControl>
                             </div>
-                            {fieldColumns.map((item: IFieldColumns, index: number) =>
+                            {fieldColumns.length > 0 &&
+                                fieldColumns.map((item: IFieldValueColumns, index: number) =>
                                 <div key={index} className={'grid grid-cols-4 mt-3 gap-2 items'}>
                                     <FormControl isInvalid={!!(errors[`${item.fieldName}${index}`])}>
                                         <Input type='text' {...register(
                                             `${item.fieldName}${index}`,
                                             {
                                                 required: true,
-                                            })} placeholder={'Field name'}/>
-                                        <FormErrorMessage>{errors[`${item.fieldName}${index}`] && 'This is required'}</FormErrorMessage>
+                                            })} placeholder={'Field name'} defaultValue={item.title}/>
+                                        <FormErrorMessage>{errors[`${item.fieldName}${index}`] && 'This is required'}
+                                        </FormErrorMessage>
                                     </FormControl>
                                     <FormControl isInvalid={!!(errors[`${item.fieldType}${index}`])}>
                                         <Select placeholder='Type' isDisabled={columns.isLoading} {...register(
                                             `${item.fieldType}${index}`,
                                             {
                                                 required: true,
-                                            })}>
+                                            })} defaultValue={item.value}>
                                             {
                                                 (columns.status === 'fulfilled' && columns.data.data) &&
                                                 columns.data.data.map((column: any, col_index: number) => {
@@ -145,10 +163,12 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
                                                 })
                                             }
                                         </Select>
-                                        <FormErrorMessage>{errors[`${item.fieldType}${index}`] && 'This is required'}</FormErrorMessage>
+                                        <FormErrorMessage>{errors[`${item.fieldType}${index}`] && 'This is required'}
+                                        </FormErrorMessage>
                                     </FormControl>
                                     <FormControl className={'pt-2'}>
-                                        <Checkbox {...register(`${item.fieldCheckbox}${index}`)} colorScheme='blue'>
+                                        <Checkbox defaultChecked={item.required}
+                                                  {...register(`${item.fieldCheckbox}${index}`)} colorScheme='blue'>
                                             Required
                                         </Checkbox>
                                     </FormControl>
@@ -175,12 +195,12 @@ const EditApiForm = React.memo(({user_id, slug, id}: IProps) => {
                                         onClick={onClose}>Cancel
                                 </button>
                                 <button
-                                    className={`w-full border rounded-3xl p-3 ${isLoading ? 'opacity-30' :
-                                        isError ? 'border-red-700' : ''}`}
-                                    type={'submit'}>Create and Generate
+                                    className={`w-full border rounded-3xl p-3 ${isUpdateLoading ? 'opacity-30' :
+                                        isUpdateError ? 'border-red-700' : ''}`}
+                                    type={'submit'}>Update your api
                                 </button>
                             </div>
-                        </form>
+                        </form>}
                     </ModalBody>
                 </ModalContent>
             </Modal>
